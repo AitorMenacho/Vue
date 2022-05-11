@@ -11,6 +11,7 @@
 import ListCharacters from '@/components/ListCharacters'
 import FilterByStatus from '@/components/FilterByStatus.vue'
 import FilterByName from '@/components/FilterByName.vue'
+
 export default {
   name: 'App',
   components: {

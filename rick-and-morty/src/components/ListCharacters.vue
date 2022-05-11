@@ -36,8 +36,30 @@
 <style lang="scss">
     .characters{
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 3fr);
         gap: 3rem;
         margin: 3rem 0;
+    }
+
+    @media only screen and (max-width: 750px) {
+
+        .characters{
+            display: grid;
+            grid-template-columns: repeat(2, 2fr);
+            gap: 3rem;
+            margin: 3rem 0;
+        }
+
+    }
+
+    @media only screen and (max-width: 450px) {
+
+        .characters{
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 3rem;
+            margin: 3rem 0;
+        }
+
     }
 </style>

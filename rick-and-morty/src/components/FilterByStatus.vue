@@ -50,4 +50,25 @@ export default {
             }
         }
     }
+
+        @media only screen and (max-width: 450px) {
+
+          .filter{
+              width: 350px;
+          }
+        }
+
+        @media only screen and (max-width: 390px) {
+
+          .filter{
+            width: 300px;
+            }
+        }
+
+    @media only screen and (max-width: 335px) {
+
+        .filter{
+            width: 250px;
+        }
+    }
 </style>
