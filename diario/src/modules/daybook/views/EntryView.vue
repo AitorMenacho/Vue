@@ -1,54 +1,143 @@
 <template>
-  <div class="entry-title d-flex justify-content-between p-2">
-    <div>
-      <span class="text-success fs-3 fw-bold">15</span>
-      <span class="mx-1 fs-3">Julio</span>
-      <span class="mx-2 fs-4 fw-light">2022, sabado</span>
+  <template v-if="entry">
+    <div class="entry-title d-flex justify-content-between p-2">
+      <div>
+        <span class="text-success fs-3 fw-bold">{{ day }}</span>
+        <span class="mx-1 fs-3">{{ month }}</span>
+        <span class="mx-2 fs-4 fw-light">{{ yearDay }}</span>
+      </div>
+
+      <div>
+        <button class="btn btn-danger mx-2">
+          borrar
+          <i class="fa fa-trash-alt"></i>
+        </button>
+
+        <button class="btn btn-primary">
+          Subir foto
+          <i class="fa fa-upload"></i>
+        </button>
+      </div>
     </div>
 
-    <div>
-      <button class="btn btn-danger mx-2">
-        borrar
-        <i class="fa fa-trash-alt"></i>
-      </button>
+    <hr>
 
-      <button class="btn btn-primary">
-        Subir foto
-        <i class="fa fa-upload"></i>
-      </button>
+    <div class="d-flex flex-column px-3 h-75">
+      <textarea
+        v-model="entry.text"
+        placeholder="¿Que sucedio hoy?"
+      ></textarea>
     </div>
-  </div>
 
-  <hr>
-
-  <div class="d-flex flex-column px-3 h-75">
-    <textarea
-      placeholder="¿Que sucedio hoy?"
-    ></textarea>
-  </div>
+    <!-- fa-save" -->
+    <img 
+      src="https://i.pinimg.com/originals/a7/fc/aa/a7fcaa43650adc892c401956a08dc32a.jpg" 
+      alt="entry-picture"
+      class="img-thumbnail"
+    >
+  </template>
 
   <FabButton  
 
     icon="fa-save"
+    @on:click="saveEntry"
   
   />
-
-<!-- fa-save" -->
-
-  <img 
-    src="https://i.pinimg.com/originals/a7/fc/aa/a7fcaa43650adc892c401956a08dc32a.jpg" 
-    alt="entry-picture"
-    class="img-thumbnail"
-  >
 
 </template>
 
 <script>
 import { defineAsyncComponent } from "vue";
+import { mapGetters, mapActions } from "vuex";
+import getDayMonthYear from "../helpers/getDayMonthYear";
 
 export default {
+  props: {
+    id: {
+      type: String,
+      required: true
+    }
+  },
+
   components: {
     FabButton: defineAsyncComponent(() => import('../components/FabButton.vue'))
+  },
+
+  data() {
+    return {
+      entry: null
+    }
+  },
+
+  computed: {
+    ...mapGetters('journal', ['getEntryById']),
+    day() {
+      const { day } = getDayMonthYear(this.entry.date)
+      return day
+    },
+    month() {
+      const { month } = getDayMonthYear(this.entry.date)
+      return month
+    },
+    yearDay() {
+      const { yearDay } = getDayMonthYear(this.entry.date)
+      return yearDay
+    }
+  },
+
+  methods: {
+    loadEntry() {
+
+      let entry;
+
+      if( this.id === 'new') {
+
+        entry = {
+          text: '',
+          date: new Date().getTime()
+        }
+
+      } else {
+        entry = this.getEntryById( this.id )
+        if ( !entry ) return this.$router.push({ name: 'no-entry' })
+      }
+
+
+      this.entry = entry
+    },
+
+    ...mapActions('journal', ['updateEntry', 'createEntry']),
+
+    async saveEntry(){
+      
+      if( this.entry.id ) {
+        //Actualizar entrada
+        await this.updateEntry( this.entry )
+
+      } else {
+        //Crear nueva entrada        
+
+        //await action
+        const id = await this.createEntry( this.entry )
+
+        //redirectTo => entry, param: id
+        this.$router.push({ name: 'entry', params: { id } })
+      }
+
+
+    }
+
+  },
+
+  created() {
+    // console.log(this.$rotue.params.id);
+    this.loadEntry()
+  },
+
+  watch: {
+    id() {
+      this.loadEntry()
+    }
   }
 }
 </script>
