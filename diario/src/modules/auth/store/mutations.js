@@ -16,7 +16,7 @@ export const loginUser = ( state, { user, idToken, refreshToken } ) => {
     if( refreshToken ) {
 
         localStorage.setItem( 'refreshToken', refreshToken )
-        state.idToken = refreshToken
+        state.refreshToken = refreshToken
 
     }
 
