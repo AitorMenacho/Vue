@@ -1,25 +1,31 @@
-import daybookRouter from "@/modules/daybook/router";
+import daybookRouter from "@/modules/daybook/router/index";
 
 
 describe('Pruebas en el router module del Daybook', () => {
     test('el router debe de tener esta configuración', async () => {
 
-        expect( daybookRouter ).toMatchObject({
+        expect(daybookRouter).toMatchO
+
+        expect(daybookRouter).toMatchObject({
             name: 'daybook',
-            component: expect.any( Function ),
+            component: () => import(/* webpackChunkName: "daybook" */ '@/modules/daybook/layouts/DayBookLayout.vue'),
             children: [
                 {
                     path: '',
                     name: 'no-entry',
-                    component: expect.any( Function ),
+                    component: () => import(/* webpackChunkName: "daybook-no-entry" */ '@/modules/daybook/views/NoEntrySelected.vue'),
                 },
                 {
                     path: ':id',
                     name: 'entry',
-                    component: expect.any( Function ),
-                    props: expect.any( Function ),
+                    component: () => import(/* webpackChunkName: "daybook-entry-view" */ '@/modules/daybook/views/EntryView.vue'),
+                    props: (route) => {
+                        return {
+                            id: route.params.id
+                        }
+                    }
                 }
-            
+
             ]
         })
 
@@ -27,12 +33,12 @@ describe('Pruebas en el router module del Daybook', () => {
         // expect( (await daybookRouter.children[1].component()).default.name ).toBe('EntryView')
 
         const promiseRoutes = []
-        daybookRouter.children.forEach( child => promiseRoutes.push( child.component() ) )
+        daybookRouter.children.forEach(child => promiseRoutes.push(child.component()))
 
-        const routes = (await Promise.all( promiseRoutes )).map( r => r.default.name )
+        const routes = (await Promise.all(promiseRoutes)).map(r => r.default.name)
 
-        expect( routes ).toContain('NoEntrySelected')
-        expect( routes ).toContain('EntryView')
+        expect(routes).toContain('NoEntrySelected')
+        expect(routes).toContain('EntryView')
 
     })
 
@@ -46,8 +52,8 @@ describe('Pruebas en el router module del Daybook', () => {
 
         // expect( daybookRouter.children[1].props( route ) ).toEqual({ id: 'ABC-123' })
 
-        const entryRoute = daybookRouter.children.find( route => route.name === 'entry' )
-        expect( entryRoute.props( route ) ).toEqual({ id: 'ABC-123' })
+        const entryRoute = daybookRouter.children.find(route => route.name === 'entry')
+        expect(entryRoute.props(route)).toEqual({ id: 'ABC-123' })
 
     })
 
