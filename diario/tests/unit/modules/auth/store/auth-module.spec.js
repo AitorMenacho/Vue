@@ -169,4 +169,62 @@ describe('Vuex: Pruebas en el auth-module', () => {
 
     })
 
+    test('Action - checkAuthentication - POSITIVA', async() => {
+
+        const store = createVuexStore({
+
+            status: 'not-authenticated',
+            user: null,
+            idToken: null,
+            refreshToken: null
+
+        })
+
+        //SignIn
+        const signInResp = await store.dispatch('auth/signInUser', { email: 'test@test.com', password:'123456' })
+
+        const { idToken } = store.state.auth
+
+        store.commit('auth/logout')
+
+        localStorage.setItem('idToken', idToken)
+
+        const checkResp = await store.dispatch('auth/checkAuthentication')
+
+        const { status, user, idToken:token, refreshToken } = store.state.auth
+
+        expect(checkResp).toEqual({ ok:true })
+
+        expect( status )             .toBe( 'authenticated' )
+        expect( user )               .toMatchObject({ name: 'User test', email: 'test@test.com' })
+        expect( typeof token )       .toBe('string')
+
+    })
+
+    test('Action - checkAuthentication - NEGATIVA', async() => {
+
+        const store = createVuexStore({
+
+            status: 'not-authenticated',
+            user: null,
+            idToken: null,
+            refreshToken: null
+
+        })
+
+        localStorage.removeItem('idToken')
+
+        const checkResp1 = await store.dispatch('auth/checkAuthentication')
+
+        expect(checkResp1).toEqual({ ok:false, message: 'No hay token' })
+        expect( store.state.auth.status ).toBe('not-authenticated')
+
+        localStorage.setItem('idToken', 'ABC-123')
+        const checkResp2 = await store.dispatch('auth/checkAuthentication')
+
+        expect(checkResp2).toEqual({ ok: false, message:'INVALID_ID_TOKEN' })  
+        expect( store.state.auth.status ).toBe('not-authenticated')
+        
+    })
+
 })
