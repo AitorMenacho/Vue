@@ -48,8 +48,8 @@ export default {
 
     const userForm = ref({
 
-      email: 'menacho.aitor@gmail.com',
-      password: '123456',
+      email: '',
+      password: '',
   
     })
 
