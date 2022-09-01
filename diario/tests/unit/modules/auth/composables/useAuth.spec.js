@@ -4,7 +4,10 @@ const mockStore = {
 
     dispatch: jest.fn(),
     commit: jest.fn(),
-    // Getters
+    getters: {
+        'auth/currentState' : 'authenticated',
+        'auth/username' : 'Aitor'
+    }
 
 }
 
@@ -101,6 +104,15 @@ describe('Pruebas en useAuth', () => {
 
         expect( mockStore.commit ).toHaveBeenCalledWith('auth/logout')
         expect( mockStore.commit ).toHaveBeenCalledWith('journal/clearEntries')
+
+    })
+
+    test('authState, username', () => {
+
+        const { authStatus, username } = useAuth()
+
+        expect(authStatus.value).toBe('authenticated')
+        expect(username.value).toBe('Aitor')
 
     })
 
